@@ -20,70 +20,29 @@
 					"port": "8081",
 					"path": [
 						"api",
-						"v1",
-						"rewards"
+						"rewards",
+						"customers"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "api/rewards//calculate",
+			"name": "api/rewards/calculate",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8081/api/rewards//calculate",
+					"raw": "http://localhost:8081/api/rewards/calculate",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8081",
+					"port": "8080",
 					"path": [
 						"api",
-						"v1",
-						"customerTotalPoints"
-					],
-					"query": [
-						{
-							"key": "customer",
-							"value": "Rahul"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api/v1/customerMonthlyPoints",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8081/api/v1/customerMonthlyPoints?customer=Ravi&from=2024-01-01&to=2024-04-27",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"api",
-						"v1",
-						"customerMonthlyPoints"
-					],
-					"query": [
-						{
-							"key": "customer",
-							"value": "Ravi"
-						},
-						{
-							"key": "from",
-							"value": "2024-01-01"
-						},
-						{
-							"key": "to",
-							"value": "2024-04-27"
-						}
+						"rewards",
+						"calculate"
 					]
 				}
 			},

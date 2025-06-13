@@ -1,10 +1,10 @@
 package com.example.restservice.controller;
 
 import com.example.restservice.model.Customer;
-import com.example.restservice.model.RewardSummary;
+import com.example.restservice.dto.RewardSummary;
+import com.example.restservice.service.CustomerService;
 import com.example.restservice.service.RewardService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -16,27 +16,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/rewards")
+@Slf4j
 public class RewardController {
 
-    private static final Logger logger = LoggerFactory.getLogger(RewardController.class);
-
     private final RewardService rewardService;
+    private final CustomerService customerService;
 
     @Autowired
-    public RewardController(RewardService rewardService) {
+    public RewardController(RewardService rewardService, CustomerService customerService) {
         this.rewardService = rewardService;
-        logger.info("RewardController initialized");
+        this.customerService = customerService;
+        log.info("RewardController initialized");
     }
 
     @GetMapping("/customers")
     public ResponseEntity<?> getCustomers(@RequestParam(required = false) Long customerId) {
         if (customerId != null) {
-            logger.info("Request received to get customer with ID: {}", customerId);
-            Customer customer = rewardService.getCustomerById(customerId);
+            log.info("Request received to get customer with ID: {}", customerId);
+            Customer customer = customerService.getCustomerById(customerId);
             return ResponseEntity.ok(customer);
         } else {
-            logger.info("Request received to get all customers");
-            return ResponseEntity.ok(rewardService.getAllCustomers());
+            log.info("Request received to get all customers");
+            return ResponseEntity.ok(customerService.getAllCustomers());
         }
     }
 
@@ -47,7 +48,7 @@ public class RewardController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false, defaultValue = "false") boolean async) {
 
-        logger.info("Request received to calculate rewards");
+        log.info("Request received to calculate rewards");
 
 
         if (customerId != null) {
@@ -59,7 +60,7 @@ public class RewardController {
                                 ". Results will be processed in the background.");
             } else {
                 RewardSummary summary = rewardService.calculateRewards(customerId, startDate, endDate);
-                logger.info("Calculated rewards for customer {}: {}", customerId, summary);
+                log.info("Calculated rewards for customer {}: {}", customerId, summary);
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(summary);

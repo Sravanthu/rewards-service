@@ -1,8 +1,7 @@
 package com.example.restservice.mapper;
 
-import com.example.restservice.dto.TransactionDTO;
 import com.example.restservice.model.Customer;
-import com.example.restservice.model.RewardSummary;
+import com.example.restservice.dto.RewardSummary;
 import com.example.restservice.model.Transaction;
 import com.example.restservice.service.RewardCalculator;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.when;
 
 public class RewardMapperTests {

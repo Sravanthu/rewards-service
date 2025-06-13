@@ -1,9 +1,8 @@
 package com.example.restservice.service;
 
-import com.example.restservice.exception.CustomerNotFoundException;
 import com.example.restservice.mapper.RewardMapper;
 import com.example.restservice.model.Customer;
-import com.example.restservice.model.RewardSummary;
+import com.example.restservice.dto.RewardSummary;
 import com.example.restservice.model.Transaction;
 import com.example.restservice.repository.CustomerRepository;
 import org.slf4j.Logger;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -35,20 +35,23 @@ public class RewardServiceImpl implements RewardService {
         // Default to last 3 months if dates not provided
         LocalDate end = (endDate != null) ? endDate : LocalDate.now();
         LocalDate start = (startDate != null) ? startDate : end.minusMonths(3);
+        if(start.isAfter(end)) {
+            throw new IllegalStateException("Start date is after end date");
+        }
 
         logger.info("Calculating rewards for customer {} from {} to {}", customerId, start, end);
 
-        Customer customer = getCustomerById(customerId);
+        Optional<Customer> customer = customerRepository.findById(customerId);
 
         // Filter transactions within the date range
         List<Transaction> filteredTransactions = rewardMapper.filterTransactionsByDateRange(
-                customer.getTransactions(), start, end);
+                customer.get().getTransactions(), start, end);
 
         // Create reward summary using mapper
-        RewardSummary summary = rewardMapper.toRewardSummary(customer, filteredTransactions);
+        RewardSummary summary = rewardMapper.toRewardSummary(customer.get(), filteredTransactions);
 
         logger.info("Customer {} earned {} total points from {} transactions", 
-                customerId, summary.getTotalRewards(), summary.getTotalTransactions());
+                customerId, summary.getTotalRewards(), summary.getTransactions().size());
 
         return summary;
     }
@@ -59,11 +62,14 @@ public class RewardServiceImpl implements RewardService {
         LocalDate end = (endDate != null) ? endDate : LocalDate.now();
         LocalDate start = (startDate != null) ? startDate : end.minusMonths(3);
 
+        if(start.isAfter(end)) {
+            throw new IllegalStateException("Start date is after end date");
+        }
         logger.info("Calculating rewards for all customers from {} to {}", start, end);
 
         List<RewardSummary> summaries = new ArrayList<>();
 
-        for (Customer customer : getAllCustomers()) {
+        for (Customer customer : customerRepository.findAll()) {
             RewardSummary summary = calculateRewards(customer.getId(), start, end);
             if (summary != null) {
                 summaries.add(summary);
@@ -78,37 +84,20 @@ public class RewardServiceImpl implements RewardService {
     public CompletableFuture<RewardSummary> calculateRewardsAsync(Long customerId, LocalDate startDate, LocalDate endDate) {
         logger.info("Asynchronously calculating rewards for customer {}", customerId);
 
-        return CompletableFuture.supplyAsync(() -> {
-            // Simulate network delay
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                logger.error("Async calculation interrupted", e);
-            }
-
-            return calculateRewards(customerId, startDate, endDate);
-        }).exceptionally(ex -> {
+        return CompletableFuture.supplyAsync(() ->
+            calculateRewards(customerId, startDate, endDate)
+        ).exceptionally(ex -> {
             if (ex.getCause() instanceof com.example.restservice.exception.CustomerNotFoundException) {
                 logger.warn("Async calculation: {}", ex.getCause().getMessage());
             } else {
                 logger.error("Error calculating rewards asynchronously", ex);
             }
-            return null;
+            RewardSummary fallback = new RewardSummary();
+            fallback.setTotalRewards(0);
+            fallback.setTransactions(new ArrayList<>());
+            fallback.setCustomerId(customerId);
+            return fallback;
         });
     }
 
-    @Override
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
-    }
-
-    @Override
-    public Customer getCustomerById(Long customerId) {
-        return customerRepository.findById(customerId)
-                .orElseThrow(() -> {
-                    logger.warn("Customer not found: {}", customerId);
-                    return new CustomerNotFoundException(customerId);
-                });
-    }
 }

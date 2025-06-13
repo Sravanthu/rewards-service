@@ -2,7 +2,7 @@ package com.example.restservice.mapper;
 
 import com.example.restservice.dto.TransactionDTO;
 import com.example.restservice.model.Customer;
-import com.example.restservice.model.RewardSummary;
+import com.example.restservice.dto.RewardSummary;
 import com.example.restservice.model.Transaction;
 import com.example.restservice.service.RewardCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,9 @@ public class RewardMapper {
     }
 
     public RewardSummary toRewardSummary(Customer customer, List<Transaction> transactions) {
-        RewardSummary summary = new RewardSummary(customer.getId(), customer.getName());
+        RewardSummary summary = new RewardSummary();
+        summary.setCustomerId(customer.getId());
+        summary.setCustomerName(customer.getName());
 
         Map<String, Integer> monthlyRewards = new HashMap<>();
         int totalRewards = 0;

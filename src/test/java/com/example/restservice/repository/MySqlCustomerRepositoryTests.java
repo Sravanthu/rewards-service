@@ -30,7 +30,7 @@ public class MySqlCustomerRepositoryTests {
         // Assert
         assertNotNull(customers);
         assertFalse(customers.isEmpty());
-        // The repository is initialized with 3 customers in data.sql
+        // The repository is initialized with 3 customers in data123.sql
         assertEquals(3, customers.size());
     }
 

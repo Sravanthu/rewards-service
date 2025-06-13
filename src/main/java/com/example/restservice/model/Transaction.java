@@ -1,26 +1,35 @@
 package com.example.restservice.model;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "transactions")
+@Data
+@NoArgsConstructor
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "customer_id", insertable = false, updatable = false)
+    @Nonnull
     private Long customerId;
 
     @Column(nullable = false)
+    @Nonnull
     private double amount;
 
     @Column(nullable = false)
+    @Nonnull
     private LocalDate date;
 
     @Column(nullable = false)
+    @Nonnull
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,75 +37,5 @@ public class Transaction {
     @JsonIgnore
     private Customer customer;
 
-    public Transaction() {
-    }
 
-    public Transaction(Long id, Long customerId, double amount, LocalDate date, String description) {
-        this.id = id;
-        this.customerId = customerId;
-        this.amount = amount;
-        this.date = date;
-        this.description = description;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-        this.customerId = customer != null ? customer.getId() : null;
-    }
-
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "id=" + id +
-                ", customerId=" + customerId +
-                ", amount=" + amount +
-                ", date=" + date +
-                ", description='" + description + '\'' +
-                '}';
-    }
 }

@@ -3,7 +3,7 @@ package com.example.restservice.service;
 import com.example.restservice.exception.CustomerNotFoundException;
 import com.example.restservice.mapper.RewardMapper;
 import com.example.restservice.model.Customer;
-import com.example.restservice.model.RewardSummary;
+import com.example.restservice.dto.RewardSummary;
 import com.example.restservice.model.Transaction;
 import com.example.restservice.repository.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;

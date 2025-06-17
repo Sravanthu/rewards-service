@@ -88,10 +88,3 @@ Example Response:
 
 *********************************************
 Postman folder in the project directory has the postman collection for API testing
-
-
-
-
-
-
-
